@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, CalendarDays } from 'lucide-react';
+import { format } from 'date-fns';
 
 const Index = () => {
   const [workItems, setWorkItems] = React.useState<WorkItem[]>([]);
