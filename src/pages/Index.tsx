@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, CalendarDays } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, eachDayOfInterval, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
 const Index = () => {
   const [workItems, setWorkItems] = React.useState<WorkItem[]>([]);
@@ -44,25 +44,27 @@ const Index = () => {
     filter === 'all' ? true : item.status === filter
   );
 
-  const getCalendarDates = () => {
-    const dates: { date: Date; items: WorkItem[] }[] = [];
-    const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const statusColors = {
+    'not-started': 'bg-gray-200',
+    'in-progress': 'bg-yellow-200',
+    'completed': 'bg-green-200'
+  };
 
-    for (let d = new Date(startOfMonth); d <= endOfMonth; d.setDate(d.getDate() + 1)) {
-      const currentDate = new Date(d);
-      const itemsForDate = filteredItems.filter(item => {
-        const itemStartDate = new Date(item.startDate);
-        const itemEndDate = new Date(item.endDate);
-        return currentDate >= itemStartDate && currentDate <= itemEndDate;
-      });
-      
-      if (itemsForDate.length > 0) {
-        dates.push({ date: new Date(d), items: itemsForDate });
-      }
-    }
-    return dates;
+  const getCalendarDates = () => {
+    if (workItems.length === 0) return [];
+    
+    const today = new Date();
+    const monthStart = startOfMonth(today);
+    const monthEnd = endOfMonth(today);
+    
+    const allDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+    
+    return allDays.map(date => {
+      const itemsForDate = filteredItems.filter(item => 
+        isWithinInterval(date, { start: item.startDate, end: item.endDate })
+      );
+      return { date, items: itemsForDate };
+    });
   };
 
   return (
@@ -115,50 +117,38 @@ const Index = () => {
         </div>
       ) : (
         <div className="bg-white p-6 rounded-lg shadow">
-          <Calendar
-            mode="single"
-            selected={new Date()}
-            modifiers={{
-              hasItems: getCalendarDates().map(d => d.date),
-            }}
-            modifiersStyles={{
-              hasItems: {
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                fontWeight: '600',
-              },
-            }}
-            components={{
-              DayContent: ({ date }) => {
-                const dateItems = getCalendarDates().find(
-                  d => d.date.toDateString() === date.toDateString()
-                );
-                return (
-                  <div className="relative w-full h-full">
-                    <div>{date.getDate()}</div>
-                    {dateItems && (
-                      <div className="absolute bottom-0 left-0 right-0">
-                        <div className="h-1 bg-blue-500 rounded-full" />
+          <div className="space-y-4">
+            {filteredItems.map(item => (
+              <div key={item.id} className="relative h-12 flex items-center">
+                <div className="w-1/4">
+                  <span className="font-medium">{item.title}</span>
+                  <span className="text-sm text-gray-500 block">{item.assignee}</span>
+                </div>
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 right-0">
+                    <div 
+                      className={`h-8 rounded ${statusColors[item.status]} relative`}
+                      style={{
+                        width: '100%',
+                        marginLeft: `${(new Date(item.startDate).getDate() - 1) * (100/31)}%`,
+                        width: `${((new Date(item.endDate).getDate() - new Date(item.startDate).getDate() + 1) * (100/31))}%`
+                      }}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center text-sm">
+                        {`${format(new Date(item.startDate), 'MMM d')} - ${format(new Date(item.endDate), 'MMM d')}`}
                       </div>
-                    )}
-                  </div>
-                );
-              },
-            }}
-          />
-          <div className="mt-4">
-            {getCalendarDates().map(({ date, items }) => (
-              <div key={date.toISOString()} className="mb-4">
-                <h3 className="font-semibold mb-2">{format(date, 'MMMM d, yyyy')}</h3>
-                <div className="space-y-2">
-                  {items.map(item => (
-                    <div key={item.id} className="p-2 bg-gray-50 rounded">
-                      <p className="font-medium">{item.title}</p>
-                      <p className="text-sm text-gray-500">{item.assignee}</p>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             ))}
+            <div className="grid grid-cols-31 gap-0 mt-2 border-t pt-2">
+              {Array.from({ length: 31 }, (_, i) => (
+                <div key={i} className="text-center text-xs text-gray-500">
+                  {i + 1}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
