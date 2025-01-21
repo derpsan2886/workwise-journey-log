@@ -21,23 +21,25 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [assignee, setAssignee] = React.useState('');
-  const [startDate, setStartDate] = React.useState<Date>(new Date());
-  const [endDate, setEndDate] = React.useState<Date>(new Date());
+  const [startDate, setStartDate] = React.useState<Date | undefined>(new Date());
+  const [endDate, setEndDate] = React.useState<Date | undefined>(new Date());
 
   const handleStartDateSelect = (date: Date | undefined) => {
+    console.log('Start date selected:', date);
     if (date) {
       setStartDate(date);
       // If end date is before new start date, update it
-      if (endDate < date) {
+      if (endDate && endDate < date) {
         setEndDate(date);
       }
     }
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
+    console.log('End date selected:', date);
     if (date) {
       // Only allow end dates that are on or after the start date
-      if (date >= startDate) {
+      if (startDate && date >= startDate) {
         setEndDate(date);
       } else {
         toast({
@@ -140,7 +142,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={startDate}
@@ -165,12 +167,12 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={endDate}
                     onSelect={handleEndDateSelect}
-                    disabled={(date) => date < startDate}
+                    disabled={(date) => startDate ? date < startDate : false}
                     initialFocus
                   />
                 </PopoverContent>
