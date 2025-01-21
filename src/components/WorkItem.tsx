@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { format } from "date-fns";
 
 export interface WorkItem {
   id: string;
@@ -12,6 +13,8 @@ export interface WorkItem {
   status: 'not-started' | 'in-progress' | 'completed';
   progress: number;
   assignee: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 interface WorkItemProps {
@@ -52,10 +55,20 @@ export const WorkItemComponent: React.FC<WorkItemProps> = ({ item, onStatusChang
           </div>
           <Progress value={item.progress} className="w-full" />
         </div>
-        <p className="text-sm mt-4">
-          <span className="text-gray-500">Assignee: </span>
-          {item.assignee}
-        </p>
+        <div className="mt-4 space-y-2">
+          <p className="text-sm">
+            <span className="text-gray-500">Assignee: </span>
+            {item.assignee}
+          </p>
+          <p className="text-sm">
+            <span className="text-gray-500">Start Date: </span>
+            {format(item.startDate, 'MMM dd, yyyy')}
+          </p>
+          <p className="text-sm">
+            <span className="text-gray-500">End Date: </span>
+            {format(item.endDate, 'MMM dd, yyyy')}
+          </p>
+        </div>
       </CardContent>
       <CardFooter className="flex justify-end space-x-2">
         {item.status !== 'completed' && (

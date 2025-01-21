@@ -3,8 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Plus, Calendar as CalendarIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import type { WorkItem } from './WorkItem';
 
 interface AddWorkItemDialogProps {
@@ -17,13 +21,24 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [assignee, setAssignee] = React.useState('');
+  const [startDate, setStartDate] = React.useState<Date>(new Date());
+  const [endDate, setEndDate] = React.useState<Date>(new Date());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !description || !assignee) {
+    if (!title || !description || !assignee || !startDate || !endDate) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (endDate < startDate) {
+      toast({
+        title: "Error",
+        description: "End date cannot be before start date",
         variant: "destructive",
       });
       return;
@@ -34,11 +49,15 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
       description,
       assignee,
       status: 'not-started',
+      startDate,
+      endDate,
     });
 
     setTitle('');
     setDescription('');
     setAssignee('');
+    setStartDate(new Date());
+    setEndDate(new Date());
     setOpen(false);
     
     toast({
@@ -79,6 +98,58 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
             />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col space-y-2">
+              <label className="text-sm">Start Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={(date) => date && setStartDate(date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label className="text-sm">End Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(date) => date && setEndDate(date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <Button type="submit" className="w-full">
             Add Item
