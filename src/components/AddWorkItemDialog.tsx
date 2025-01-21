@@ -24,6 +24,31 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
   const [startDate, setStartDate] = React.useState<Date>(new Date());
   const [endDate, setEndDate] = React.useState<Date>(new Date());
 
+  const handleStartDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setStartDate(date);
+      // If end date is before new start date, update it
+      if (endDate < date) {
+        setEndDate(date);
+      }
+    }
+  };
+
+  const handleEndDateSelect = (date: Date | undefined) => {
+    if (date) {
+      // Only allow end dates that are on or after the start date
+      if (date >= startDate) {
+        setEndDate(date);
+      } else {
+        toast({
+          title: "Invalid Date Selection",
+          description: "End date cannot be before start date",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || !assignee || !startDate || !endDate) {
@@ -119,7 +144,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={(date) => date && setStartDate(date)}
+                    onSelect={handleStartDateSelect}
                     initialFocus
                   />
                 </PopoverContent>
@@ -144,7 +169,8 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={(date) => date && setEndDate(date)}
+                    onSelect={handleEndDateSelect}
+                    disabled={(date) => date < startDate}
                     initialFocus
                   />
                 </PopoverContent>
