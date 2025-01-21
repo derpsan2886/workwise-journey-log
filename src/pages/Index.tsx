@@ -129,7 +129,6 @@ const Index = () => {
                     <div 
                       className={`h-8 rounded ${statusColors[item.status]} relative`}
                       style={{
-                        width: '100%',
                         marginLeft: `${(new Date(item.startDate).getDate() - 1) * (100/31)}%`,
                         width: `${((new Date(item.endDate).getDate() - new Date(item.startDate).getDate() + 1) * (100/31))}%`
                       }}
