@@ -124,7 +124,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "justify-start text-left font-normal",
+                      "justify-start text-left font-normal cursor-pointer",
                       !startDate && "text-muted-foreground"
                     )}
                   >
@@ -138,6 +138,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     selected={startDate}
                     onSelect={handleStartDateSelect}
                     initialFocus
+                    className="cursor-pointer"
                   />
                 </PopoverContent>
               </Popover>
@@ -149,7 +150,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "justify-start text-left font-normal",
+                      "justify-start text-left font-normal cursor-pointer",
                       !endDate && "text-muted-foreground"
                     )}
                   >
@@ -164,6 +165,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     onSelect={handleEndDateSelect}
                     disabled={(date) => startDate ? date < startDate : false}
                     initialFocus
+                    className="cursor-pointer"
                   />
                 </PopoverContent>
               </Popover>
