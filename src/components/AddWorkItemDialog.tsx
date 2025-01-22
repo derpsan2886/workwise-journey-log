@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,34 +21,29 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [assignee, setAssignee] = React.useState('');
-  const [startDate, setStartDate] = React.useState<Date | undefined>(new Date());
-  const [endDate, setEndDate] = React.useState<Date | undefined>(new Date());
+  const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
 
   const handleStartDateSelect = (date: Date | undefined) => {
     console.log('Start date selected:', date);
-    if (date) {
-      setStartDate(date);
-      // If end date is before new start date, update it
-      if (endDate && endDate < date) {
-        setEndDate(date);
-      }
+    setStartDate(date);
+    // If end date is before new start date, reset it
+    if (date && endDate && endDate < date) {
+      setEndDate(undefined);
     }
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
     console.log('End date selected:', date);
-    if (date) {
-      // Only allow end dates that are on or after the start date
-      if (startDate && date >= startDate) {
-        setEndDate(date);
-      } else {
-        toast({
-          title: "Invalid Date Selection",
-          description: "End date cannot be before start date",
-          variant: "destructive",
-        });
-      }
+    if (date && startDate && date < startDate) {
+      toast({
+        title: "Invalid Date Selection",
+        description: "End date cannot be before start date",
+        variant: "destructive",
+      });
+      return;
     }
+    setEndDate(date);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -57,15 +52,6 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
       toast({
         title: "Error",
         description: "Please fill in all fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (endDate < startDate) {
-      toast({
-        title: "Error",
-        description: "End date cannot be before start date",
         variant: "destructive",
       });
       return;
@@ -83,8 +69,8 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
     setTitle('');
     setDescription('');
     setAssignee('');
-    setStartDate(new Date());
-    setEndDate(new Date());
+    setStartDate(undefined);
+    setEndDate(undefined);
     setOpen(false);
     
     toast({
@@ -103,6 +89,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add New Work Item</DialogTitle>
+          <DialogDescription>Fill in the details to create a new work item.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
