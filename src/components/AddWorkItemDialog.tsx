@@ -23,11 +23,13 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
   const [assignee, setAssignee] = React.useState('');
   const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
+  const [startDateOpen, setStartDateOpen] = React.useState(false);
+  const [endDateOpen, setEndDateOpen] = React.useState(false);
 
   const handleStartDateSelect = (date: Date | undefined) => {
     console.log('Start date selected:', date);
     setStartDate(date);
-    // If end date is before new start date, reset it
+    setStartDateOpen(false);
     if (date && endDate && endDate < date) {
       setEndDate(undefined);
     }
@@ -44,6 +46,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
       return;
     }
     setEndDate(date);
+    setEndDateOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -116,7 +119,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col space-y-2">
               <label className="text-sm">Start Date</label>
-              <Popover>
+              <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -129,7 +132,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={startDate}
@@ -141,7 +144,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
             </div>
             <div className="flex flex-col space-y-2">
               <label className="text-sm">End Date</label>
-              <Popover>
+              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -154,7 +157,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={endDate}
