@@ -21,8 +21,8 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [assignee, setAssignee] = React.useState('');
-  const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
   const [startDateOpen, setStartDateOpen] = React.useState(false);
   const [endDateOpen, setEndDateOpen] = React.useState(false);
 
@@ -30,7 +30,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
     console.log('Start date selected:', date);
     setStartDate(date);
     setStartDateOpen(false);
-    if (date && endDate && endDate < date) {
+    if (date && endDate && date > endDate) {
       setEndDate(undefined);
     }
   };
@@ -124,7 +124,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "justify-start text-left font-normal cursor-pointer",
+                      "w-full justify-start text-left font-normal",
                       !startDate && "text-muted-foreground"
                     )}
                   >
@@ -132,13 +132,12 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={startDate}
                     onSelect={handleStartDateSelect}
                     initialFocus
-                    className="cursor-pointer"
                   />
                 </PopoverContent>
               </Popover>
@@ -150,7 +149,7 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "justify-start text-left font-normal cursor-pointer",
+                      "w-full justify-start text-left font-normal",
                       !endDate && "text-muted-foreground"
                     )}
                   >
@@ -158,14 +157,13 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                     {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={endDate}
                     onSelect={handleEndDateSelect}
                     disabled={(date) => startDate ? date < startDate : false}
                     initialFocus
-                    className="cursor-pointer"
                   />
                 </PopoverContent>
               </Popover>
