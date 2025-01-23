@@ -135,8 +135,13 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   className="w-auto p-0" 
                   onPointerDownOutside={(e) => e.preventDefault()}
                   onInteractOutside={(e) => e.preventDefault()}
+                  style={{ position: 'relative', zIndex: 50 }}
                 >
-                  <div onClick={(e) => e.stopPropagation()}>
+                  <div 
+                    onClick={(e) => e.stopPropagation()} 
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="relative"
+                  >
                     <Calendar
                       mode="single"
                       selected={startDate}
@@ -170,8 +175,13 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                   className="w-auto p-0"
                   onPointerDownOutside={(e) => e.preventDefault()}
                   onInteractOutside={(e) => e.preventDefault()}
+                  style={{ position: 'relative', zIndex: 50 }}
                 >
-                  <div onClick={(e) => e.stopPropagation()}>
+                  <div 
+                    onClick={(e) => e.stopPropagation()} 
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="relative"
+                  >
                     <Calendar
                       mode="single"
                       selected={endDate}
