@@ -32,7 +32,6 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
     if (date && endDate && date > endDate) {
       setEndDate(undefined);
     }
-    // Don't close the popover automatically
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
@@ -46,7 +45,6 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
       return;
     }
     setEndDate(date);
-    // Don't close the popover automatically
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -127,18 +125,28 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                       "w-full justify-start text-left font-normal",
                       !startDate && "text-muted-foreground"
                     )}
+                    type="button"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" onClick={(e) => e.stopPropagation()}>
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={handleStartDateSelect}
-                    initialFocus
-                  />
+                <PopoverContent 
+                  className="w-auto p-0" 
+                  onPointerDownOutside={(e) => e.preventDefault()}
+                  onInteractOutside={(e) => e.preventDefault()}
+                >
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => {
+                        handleStartDateSelect(date);
+                        setStartDateOpen(false);
+                      }}
+                      initialFocus
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
@@ -152,19 +160,29 @@ export const AddWorkItemDialog: React.FC<AddWorkItemDialogProps> = ({ onAdd }) =
                       "w-full justify-start text-left font-normal",
                       !endDate && "text-muted-foreground"
                     )}
+                    type="button"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" onClick={(e) => e.stopPropagation()}>
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={handleEndDateSelect}
-                    disabled={(date) => startDate ? date < startDate : false}
-                    initialFocus
-                  />
+                <PopoverContent 
+                  className="w-auto p-0"
+                  onPointerDownOutside={(e) => e.preventDefault()}
+                  onInteractOutside={(e) => e.preventDefault()}
+                >
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(date) => {
+                        handleEndDateSelect(date);
+                        setEndDateOpen(false);
+                      }}
+                      disabled={(date) => startDate ? date < startDate : false}
+                      initialFocus
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
