@@ -23,6 +23,11 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   onOpenChange,
   disabled
 }) => {
+  const handleCalendarClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <div className="flex flex-col space-y-2">
       <label className="text-sm">{label}</label>
@@ -44,7 +49,14 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
           className="w-auto p-0" 
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
-          style={{ position: 'fixed', zIndex: 9999 }}
+          onClick={handleCalendarClick}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{ 
+            position: 'fixed', 
+            zIndex: 9999,
+            backgroundColor: 'white',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+          }}
         >
           <div 
             onClick={(e) => e.stopPropagation()} 
